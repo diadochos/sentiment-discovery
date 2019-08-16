@@ -6,7 +6,7 @@
 # Author & Contact: Raul Puri (raulp@nvidia.com)
 ###############################################################################
 
-from configure_data import configure_data
+from .configure_data import configure_data
 
 def add_general_args(parser):
     group = parser.add_argument_group('general', 'general purpose arguments')
@@ -89,7 +89,7 @@ def add_unsupervised_data_args(parser):
 def add_model_args(parser):
     args, _ = parser.parse_known_args()
     if args.model.lower() == 'transformer':
-        return add_transformer_args(parser) 
+        return add_transformer_args(parser)
     else:
         return add_recurrent_args(parser)
 
@@ -231,7 +231,7 @@ def add_run_classifier_args(parser):
                         help='path to save numpy of predicted probabilities')
     group.add_argument('--write-results', type=str, default='',
                         help='path to location for CSV -- write results of model on data \
-                             input strings + results and variances. Will not write if empty') 
+                             input strings + results and variances. Will not write if empty')
     return data_config, data_group, group, parser
 
 def add_finetune_classifier_args(parser):
@@ -294,7 +294,7 @@ def add_finetune_classifier_args(parser):
                         help='Learning rate decay, one of constant(None), linear, cosine, or exponential')
     group.add_argument('--warmup-epochs', type=float, default=0.,
                         help='number of epochs to warm up learning rate over.')
-    group.add_argument('--decay-epochs', type=float, default=-1, 
+    group.add_argument('--decay-epochs', type=float, default=-1,
                         help='number of epochs to decay for. If -1 decays for all of training')
     group.add_argument('--load-finetuned', action='store_true',
                         help='load not just the language model but a previously finetuned full classifier checkpoint')

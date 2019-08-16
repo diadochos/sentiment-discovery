@@ -1,7 +1,7 @@
 import os
 import copy
 
-import data_utils
+from .data_utils import make_dataset, ShardLoader, DataLoader
 
 class DataConfig(object):
     def __init__(self, parser, defaults={}):
@@ -40,10 +40,10 @@ def make_loaders(opt):
                     'pin_memory': True, 'transpose': opt.transpose, 'distributed': opt.world_size > 1,
                     'rank': opt.rank, 'world_size': opt.world_size, 'drop_last': opt.world_size > 1}
     if opt.data_set_type == 'L2R':
-        loader_type = data_utils.ShardLoader
+        loader_type = ShardLoader
         data_loader_args.update({'seq_len': seq_length, 'persist_state': opt.persist_state, 'samples_per_shard': opt.samples_per_shard})
     else:
-        loader_type = data_utils.DataLoader
+        loader_type = DataLoader
     split = get_split(opt)
     data_set_args = {
         'path': opt.data, 'seq_length': seq_length, 'lazy': opt.lazy, 'delim': opt.delim,
@@ -73,17 +73,17 @@ def make_loaders(opt):
     test = None
 
     if opt.data is not None:
-        train, tokenizer = data_utils.make_dataset(**data_set_args)
+        train, tokenizer = make_dataset(**data_set_args)
         if should_split(split):
             train, valid, test = train
     eval_set_args['tokenizer'] = tokenizer
 
     if opt.valid is not None:
         eval_set_args['path'] = opt.valid
-        valid, _ = data_utils.make_dataset(**eval_set_args)
+        valid, _ = make_dataset(**eval_set_args)
     if test is None and opt.test is not None:
         eval_set_args['path'] = opt.test
-        test, _ = data_utils.make_dataset(**eval_set_args)
+        test, _ = make_dataset(**eval_set_args)
 
 
     if train is not None and opt.batch_size > 0:
@@ -99,7 +99,7 @@ def should_split(split):
 
 def get_split(opt):
     splits = []
-    if opt.split.find(',') != -1: 
+    if opt.split.find(',') != -1:
         splits = [float(s) for s in opt.split.split(',')]
     elif opt.split.find('/') != -1:
         splits = [float(s) for s in opt.split.split('/')]

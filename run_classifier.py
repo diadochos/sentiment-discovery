@@ -13,11 +13,11 @@ import torch.nn.functional as F
 import numpy as np
 import pandas as pd
 
-from reparameterization import apply_weight_norm, remove_weight_norm
+from .reparameterization import apply_weight_norm, remove_weight_norm
 
-from model import SentimentClassifier
-from configure_data import configure_data
-from arguments import add_general_args, add_model_args, add_classifier_model_args, add_run_classifier_args
+from .model import SentimentClassifier
+from .configure_data import configure_data
+from .arguments import add_general_args, add_model_args, add_classifier_model_args, add_run_classifier_args
 
 def get_data_and_args():
     parser = argparse.ArgumentParser(description='PyTorch Sentiment Discovery Classification')
@@ -96,7 +96,7 @@ def get_model(args):
 
 # uses similar function as transform from transfer.py
 def classify(model, text, args):
-    # Make sure to set *both* parts of the model to .eval() mode. 
+    # Make sure to set *both* parts of the model to .eval() mode.
     model.lm_encoder.eval()
     model.classifier.eval()
     # Initialize data, append results
@@ -211,7 +211,7 @@ def get_row(pred, prob, std, classes, heads_per_class=1, softmax=False, dual_thr
     if dual_thresh:
         row.append(pred[2])
         row.append(prob[2])
-    return row 
+    return row
 
 def get_writer(preds, probs, stds, classes, heads_per_class=1, softmax=False, dual_thresh=False):
     header = make_header(classes, heads_per_class, softmax, dual_thresh)
